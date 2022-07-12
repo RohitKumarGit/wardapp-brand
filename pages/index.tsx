@@ -4,7 +4,7 @@ import { Button, MenuProps, Image } from "antd";
 import styles from "../styles/Home.module.css";
 import "antd/dist/antd.css";
 import { Menu } from "antd";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ListProduct from "../components/ListProduct";
 import MintNFT from "../components/MintNFT";
 export enum MenuItems {
@@ -20,7 +20,6 @@ const Home: NextPage = () => {
     console.log("menu changed ", e);
     setCurrent(e.key as MenuItems.LIST_PRODUCT);
   };
-
   return (
     <div>
       <Menu

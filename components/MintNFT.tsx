@@ -6,6 +6,20 @@ import { constants } from "../constants";
 import { MenuItems } from "../pages";
 import { Product } from "../utils";
 
+export const isAddress = function (address) {
+  // check if it has the basic requirements of an address
+  if (!/^(0x)?[0-9a-f]{40}$/i.test(address)) {
+    return false;
+    // If it's ALL lowercase or ALL upppercase
+  } else if (
+    /^(0x|0X)?[0-9a-f]{40}$/.test(address) ||
+    /^(0x|0X)?[0-9A-F]{40}$/.test(address)
+  ) {
+    return true;
+    // Otherwise check each case
+  }
+};
+import { validate } from "bitcoin-address-validation";
 const MintNFT = (props) => {
   const [loading, setLoading] = useState(false);
   const [success, setSuceess] = useState(false);
@@ -31,7 +45,6 @@ const MintNFT = (props) => {
       resp = (resp as any).filter((product: Product) => {
         return product.brand_id === constants.BRAND_ID && !product.isSold;
       });
-      console.log(resp);
       return resp as any;
     } catch (error) {
       console.log(error);
@@ -57,9 +70,7 @@ const MintNFT = (props) => {
         options
       );
       setLoading(false);
-      alert(
-        "NFT has been issued and will be transferred to customer's account in 2 minutes."
-      );
+      setSuceess(true);
     } catch (error) {
       throw new Error("Internal error");
     }
@@ -83,7 +94,7 @@ const MintNFT = (props) => {
           <Result
             status="success"
             className="form"
-            title="Successfully Minted/Created an NFT and the same would be transferred to customer's wallet in 2 minuted !!"
+            title="Successfully Minted/Created the NFT and the same would be transferred to customer's wallet in 2 minutes!!"
             subTitle="This NFT is publicly visible and verifyable :)  "
             extra={[
               <Button
@@ -94,7 +105,7 @@ const MintNFT = (props) => {
                 Mint NFT
               </Button>,
               <Button key="buy" onClick={handleSucessMint}>
-                List Another product
+                Mint/Create new NFT.
               </Button>,
             ]}
           />
@@ -135,8 +146,23 @@ const MintNFT = (props) => {
               rules={[
                 {
                   required: true,
-                  message: "Please input proper blockchain  address!",
+                  message: "blockchain address is a required field!",
                 },
+                ({ getFieldValue }) => ({
+                  validator(_, value) {
+                    if (
+                      !value ||
+                      getFieldValue("blockChainAddress").trim().length === 42
+                    ) {
+                      return Promise.resolve();
+                    }
+                    return Promise.reject(
+                      new Error(
+                        "Please enter proper format blockchain address."
+                      )
+                    );
+                  },
+                }),
               ]}
             >
               <Input />
@@ -147,7 +173,7 @@ const MintNFT = (props) => {
               rules={[
                 {
                   required: true,
-                  message: "Please input proper customer name!",
+                  message: "Please enter proper customer's name!",
                 },
               ]}
             >
@@ -159,8 +185,20 @@ const MintNFT = (props) => {
               rules={[
                 {
                   required: true,
-                  message: "Please input proper customer's phone  numberr!",
+                  message: "This field is required!",
                 },
+                ({ getFieldValue }) => ({
+                  validator(_, value) {
+                    if (!value || getFieldValue("phone").trim().length == 10) {
+                      return Promise.resolve();
+                    }
+                    return Promise.reject(
+                      new Error(
+                        "Please enter 10 digit phone number without any prefix or spaces."
+                      )
+                    );
+                  },
+                }),
               ]}
             >
               <Input />
@@ -182,8 +220,9 @@ const MintNFT = (props) => {
                 type="primary"
                 htmlType="submit"
                 className="login-form-button"
+                block
               >
-                Mint
+                Mint ans transfer NFT
               </Button>
             </Form.Item>
           </Form>

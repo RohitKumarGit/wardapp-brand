@@ -9,6 +9,7 @@ const ListProduct = (props) => {
   const handleSucessMint = function () {
     setSuceess(false);
   };
+  const verifyBlockchainAddress = function () {};
   const handleMintNFTSucess = function () {
     props.handleMenuChange(MenuItems.MINT_NFT);
   };

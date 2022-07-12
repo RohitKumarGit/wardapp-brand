@@ -13,6 +13,7 @@
     "@web3auth/web3auth": "^1.1.0",
     "antd": "^4.21.5",
     "autoprefixer": "^10.4.7",
+    "bitcoin-address-validation": "^2.2.1",
     "magic-sdk": "^8.1.1",
     "moralis": "^1.8.1",
     "next": "12.2.1",
