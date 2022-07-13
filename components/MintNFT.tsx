@@ -1,4 +1,13 @@
-import { Button, Form, Input, Select, DatePicker, Result } from "antd";
+import {
+  Button,
+  Form,
+  Input,
+  Select,
+  DatePicker,
+  Result,
+  Spin,
+  Alert,
+} from "antd";
 import { Option } from "antd/lib/mentions";
 const { RangePicker } = DatePicker;
 import { useEffect, useState } from "react";
@@ -23,6 +32,7 @@ import { validate } from "bitcoin-address-validation";
 const MintNFT = (props) => {
   const [loading, setLoading] = useState(false);
   const [success, setSuceess] = useState(false);
+  const [fetchingProduct, setFetchingProduct] = useState(true);
   const handleSucessMint = function () {
     setSuceess(false);
   };
@@ -30,6 +40,7 @@ const MintNFT = (props) => {
     props.handleMenuChange(MenuItems.VIEW_PRODUCTS);
   };
   const getAllProducts = async function () {
+    setFetchingProduct(true);
     const options = {
       method: constants.API_ENDPOINTS.GET_ALL_PRODUCTS.METHOD,
       headers: {
@@ -45,10 +56,14 @@ const MintNFT = (props) => {
       resp = (resp as any).filter((product: Product) => {
         return product.brand_id === constants.BRAND_ID && !product.isSold;
       });
+      setFetchingProduct(false);
       return resp as any;
     } catch (error) {
       console.log(error);
-      throw new Error("Internal error");
+      setFetchingProduct(false);
+      throw new Error(
+        "There is some internal error while fetching product Details. Please try again later!"
+      );
     }
   };
   const onFinish = async function (val: any) {
@@ -90,143 +105,159 @@ const MintNFT = (props) => {
     <div className=" mx-auto flex justify-between h-vw ">
       <div className="left-1"></div>
       <div className="right">
-        {success ? (
-          <Result
-            status="success"
-            className="form"
-            title="Successfully Minted/Created the NFT and the same would be transferred to customer's wallet in 2 minutes!!"
-            subTitle="This NFT is publicly visible and verifyable :)  "
-            extra={[
-              <Button
-                type="primary"
-                key="console"
-                onClick={handleMintNFTSucess}
-              >
-                Mint NFT
-              </Button>,
-              <Button key="buy" onClick={handleSucessMint}>
-                Mint/Create new NFT.
-              </Button>,
-            ]}
-          />
-        ) : (
-          <Form
-            name="basic"
-            layout="vertical"
-            labelCol={{ span: 8 }}
-            wrapperCol={{ span: 16 }}
-            initialValues={{ remember: true }}
-            onFinish={onFinish}
-            className="form"
-          >
-            <h1 className="text-3xl font-bold mt-5  ">
-              Mint NFT for a product
-            </h1>
-            <Form.Item
-              label="Select Serial number"
-              name="serial_no"
-              rules={[
-                { required: true, message: "Please input  product Name!" },
+        <h1>
+          {" "}
+          {fetchingProduct ? (
+            <div className="form">
+              <Spin size="large">
+                <Alert
+                  message="Please wait while we fetch product information from the  database."
+                  description="This should not take too long. Please reload page after a minute if loading persists."
+                  type="info"
+                />
+              </Spin>
+            </div>
+          ) : success ? (
+            <Result
+              status="success"
+              className="form"
+              title="Successfully Minted/Created the NFT and the same would be transferred to customer's wallet in 2 minutes!!"
+              subTitle="This NFT is publicly visible and verifyable :)  "
+              extra={[
+                <Button
+                  type="primary"
+                  key="console"
+                  onClick={handleMintNFTSucess}
+                >
+                  Mint NFT
+                </Button>,
+                <Button key="buy" onClick={handleSucessMint}>
+                  Mint/Create new NFT.
+                </Button>,
               ]}
+            />
+          ) : (
+            <Form
+              name="basic"
+              layout="vertical"
+              labelCol={{ span: 8 }}
+              wrapperCol={{ span: 16 }}
+              initialValues={{ remember: true }}
+              onFinish={onFinish}
+              className="form"
             >
-              <Select placeholder="Click to see available serial numbers">
-                {products.map((product) => {
-                  return (
-                    <Option value={product.serial_no}>
-                      {product.serial_no}
-                    </Option>
-                  );
-                })}
-              </Select>
-            </Form.Item>
+              <h1 className="text-3xl font-bold mt-5  ">
+                Mint NFT for a product
+              </h1>
+              <Form.Item
+                label="Select Serial number"
+                name="serial_no"
+                rules={[
+                  { required: true, message: "Please input  product Name!" },
+                ]}
+              >
+                <Select placeholder="Click to see available serial numbers">
+                  {products.map((product) => {
+                    return (
+                      <Option value={product.serial_no}>
+                        {product.serial_no}
+                      </Option>
+                    );
+                  })}
+                </Select>
+              </Form.Item>
 
-            <Form.Item
-              label="Give user blockchain address"
-              name="blockChainAddress"
-              rules={[
-                {
-                  required: true,
-                  message: "blockchain address is a required field!",
-                },
-                ({ getFieldValue }) => ({
-                  validator(_, value) {
-                    if (
-                      !value ||
-                      getFieldValue("blockChainAddress").trim().length === 42
-                    ) {
-                      return Promise.resolve();
-                    }
-                    return Promise.reject(
-                      new Error(
-                        "Please enter proper format blockchain address."
-                      )
-                    );
+              <Form.Item
+                label="Give user blockchain address"
+                name="blockChainAddress"
+                rules={[
+                  {
+                    required: true,
+                    message: "blockchain address is a required field!",
                   },
-                }),
-              ]}
-            >
-              <Input />
-            </Form.Item>
-            <Form.Item
-              label="Give customer's name"
-              name="name"
-              rules={[
-                {
-                  required: true,
-                  message: "Please enter proper customer's name!",
-                },
-              ]}
-            >
-              <Input />
-            </Form.Item>
-            <Form.Item
-              label="Give  customer's phone number"
-              name="phone"
-              rules={[
-                {
-                  required: true,
-                  message: "This field is required!",
-                },
-                ({ getFieldValue }) => ({
-                  validator(_, value) {
-                    if (!value || getFieldValue("phone").trim().length == 10) {
-                      return Promise.resolve();
-                    }
-                    return Promise.reject(
-                      new Error(
-                        "Please enter 10 digit phone number without any prefix or spaces."
-                      )
-                    );
-                  },
-                }),
-              ]}
-            >
-              <Input />
-            </Form.Item>
-            <Form.Item
-              label="Give warranty date"
-              name="warranty_range"
-              rules={[
-                {
-                  required: true,
-                  message: "Please input properly!",
-                },
-              ]}
-            >
-              <RangePicker />
-            </Form.Item>
-            <Form.Item>
-              <Button
-                type="primary"
-                htmlType="submit"
-                className="login-form-button"
-                block
+                  ({ getFieldValue }) => ({
+                    validator(_, value) {
+                      if (
+                        !value ||
+                        getFieldValue("blockChainAddress").trim().length === 42
+                      ) {
+                        return Promise.resolve();
+                      }
+                      return Promise.reject(
+                        new Error(
+                          "Please enter proper format blockchain address."
+                        )
+                      );
+                    },
+                  }),
+                ]}
               >
-                Mint ans transfer NFT
-              </Button>
-            </Form.Item>
-          </Form>
-        )}
+                <Input />
+              </Form.Item>
+              <Form.Item
+                label="Give customer's name"
+                name="name"
+                rules={[
+                  {
+                    required: true,
+                    message: "Please enter proper customer's name!",
+                  },
+                ]}
+              >
+                <Input />
+              </Form.Item>
+              <Form.Item
+                label="Give  customer's phone number"
+                name="phone"
+                rules={[
+                  {
+                    required: true,
+                    message: "This field is required!",
+                  },
+                  ({ getFieldValue }) => ({
+                    validator(_, value) {
+                      if (
+                        !value ||
+                        getFieldValue("phone").trim().length == 10
+                      ) {
+                        return Promise.resolve();
+                      }
+                      return Promise.reject(
+                        new Error(
+                          "Please enter 10 digit phone number without any prefix or spaces."
+                        )
+                      );
+                    },
+                  }),
+                ]}
+              >
+                <Input />
+              </Form.Item>
+              <Form.Item
+                label="Give warranty date"
+                name="warranty_range"
+                rules={[
+                  {
+                    required: true,
+                    message: "Please input properly!",
+                  },
+                ]}
+              >
+                <RangePicker />
+              </Form.Item>
+              <Form.Item>
+                <Button
+                  type="primary"
+                  htmlType="submit"
+                  className="login-form-button"
+                  block
+                >
+                  Mint and transfer NFT
+                </Button>
+              </Form.Item>
+            </Form>
+          )}
+        </h1>
       </div>
     </div>
   );

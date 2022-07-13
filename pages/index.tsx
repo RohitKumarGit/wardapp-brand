@@ -13,6 +13,7 @@ export enum MenuItems {
   MINT_NFT = "Mint NFT",
   VIEW_USERS = "View Users",
 }
+import Link from "next/link";
 
 const Home: NextPage = () => {
   const [current, setCurrent] = useState(MenuItems.LIST_PRODUCT);

@@ -1,9 +1,43 @@
-import { Button, Form, Input, Result } from "antd";
+import {
+  Button,
+  Form,
+  Input,
+  message,
+  Result,
+  Upload,
+  UploadFile,
+  UploadProps,
+} from "antd";
 import { Product } from "../utils";
 import { constants } from "../constants";
+import { InboxOutlined } from "@ant-design/icons";
 import { useState } from "react";
 import { MenuItems } from "../pages";
+import { RcFile } from "antd/lib/upload";
+import Dragger from "antd/lib/upload/Dragger";
 const ListProduct = (props) => {
+  const [fileList, setFileList] = useState<UploadFile[]>([]);
+  const uploadProps: UploadProps = {
+    onRemove: (file) => {
+      console.log("removing");
+      const index = fileList.indexOf(file);
+      const newFileList = fileList.slice();
+      newFileList.splice(index, 1);
+      setFileList([]);
+    },
+    beforeUpload: (file) => {
+      console.log(file);
+      const isJPEG = file.type === "image/jpeg" || file.type === "image/jpg";
+      if (!isJPEG) {
+        message.error(`${file.name} is not a JPEG or JPG file`);
+        return Upload.LIST_IGNORE;
+      } else {
+        setFileList([...fileList, file]);
+        return false;
+      }
+    },
+    fileList,
+  };
   const [loading, setLoading] = useState(false);
   const [success, setSuceess] = useState(false);
   const handleSucessMint = function () {
@@ -15,15 +49,16 @@ const ListProduct = (props) => {
   };
   const onFinish = async function (val: Product) {
     setLoading(true);
-    // make HTTP call
-    console.log(val);
     val.brand_id = constants.BRAND_ID;
+    const formData = new FormData();
+    Object.keys(val).forEach((key) => {
+      console.log(val[key]);
+      formData.append(key, val[key]);
+    });
+    formData.append("image", val.image.file);
     const options = {
       method: constants.API_ENDPOINTS.LIST_PRODUCT.METHOD,
-      body: JSON.stringify(val),
-      headers: {
-        "Content-Type": "application/json",
-      },
+      body: formData,
     };
     try {
       let resp = await fetch(
@@ -65,7 +100,6 @@ const ListProduct = (props) => {
           <Form
             name="basic"
             layout="vertical"
-            labelCol={{ span: 4 }}
             wrapperCol={{ span: 16 }}
             initialValues={{ remember: true }}
             onFinish={onFinish}
@@ -100,7 +134,19 @@ const ListProduct = (props) => {
             >
               <Input />
             </Form.Item>
-
+            <Form.Item
+              label="Product image (JPEG and JPG extensions are allowed only)"
+              name="image"
+            >
+              <Dragger multiple={false} {...uploadProps}>
+                <p className="ant-upload-drag-icon">
+                  <InboxOutlined />
+                </p>
+                <p className="ant-upload-text">
+                  Click or drag image to this area to upload
+                </p>
+              </Dragger>
+            </Form.Item>
             <Form.Item>
               <Button
                 block

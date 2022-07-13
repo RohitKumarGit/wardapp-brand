@@ -5,6 +5,7 @@ export class Product {
   isSold: boolean;
   token_id: number;
   brand_id = "123";
+  image: any;
 }
 export class User {
   products: string[]; // list of serial nos
