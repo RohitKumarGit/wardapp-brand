@@ -7,14 +7,16 @@ import {
   Result,
   Spin,
   Alert,
+  Space,
+  message,
 } from "antd";
 import { Option } from "antd/lib/mentions";
 const { RangePicker } = DatePicker;
 import { useEffect, useState } from "react";
 import { constants } from "../constants";
 import { MenuItems } from "../pages";
-import { Product } from "../utils";
-
+import { Product, User } from "../utils";
+export const ViewOnPolygonScan = function (url) {};
 export const isAddress = function (address) {
   // check if it has the basic requirements of an address
   if (!/^(0x)?[0-9a-f]{40}$/i.test(address)) {
@@ -29,15 +31,25 @@ export const isAddress = function (address) {
   }
 };
 import { validate } from "bitcoin-address-validation";
+import { SendOutlined } from "@ant-design/icons";
+import axios from "axios";
 const MintNFT = (props) => {
   const [loading, setLoading] = useState(false);
   const [success, setSuceess] = useState(false);
   const [fetchingProduct, setFetchingProduct] = useState(true);
+  const [users, setUsers] = useState<User[]>([]);
+  const [hash, setHash] = useState<string>("");
   const handleSucessMint = function () {
     setSuceess(false);
   };
   const handleMintNFTSucess = function () {
     props.handleMenuChange(MenuItems.VIEW_PRODUCTS);
+  };
+  const getAllUsers = async function () {
+    const { data } = await axios.get(
+      constants.BASE_URL + constants.API_ENDPOINTS.GET_ALL_USERS.URL
+    );
+    setUsers(data);
   };
   const getAllProducts = async function () {
     setFetchingProduct(true);
@@ -54,7 +66,10 @@ const MintNFT = (props) => {
       );
       resp = await resp.json();
       resp = (resp as any).filter((product: Product) => {
-        return product.brand_id === constants.BRAND_ID && !product.isSold;
+        return (
+          product.brand_id === localStorage.getItem("brandId") &&
+          !product.isSold
+        );
       });
       setFetchingProduct(false);
       return resp as any;
@@ -71,7 +86,7 @@ const MintNFT = (props) => {
     console.log(val.warranty_range);
     val.purchase_date = val.warranty_range[0]._d;
     val.warranty_valid_uptill = val.warranty_range[1]._d;
-    val.brand_id = constants.BRAND_ID;
+    val.brand_id = localStorage.getItem("brandId");
     const options = {
       method: constants.API_ENDPOINTS.MINT_NFT.METHOD,
       headers: {
@@ -84,7 +99,11 @@ const MintNFT = (props) => {
         constants.BASE_URL + constants.API_ENDPOINTS.MINT_NFT.URL,
         options
       );
+
+      const data = await resp.json();
+      console.log(data);
       setLoading(false);
+      setHash(data.hash);
       setSuceess(true);
     } catch (error) {
       throw new Error("Internal error");
@@ -96,8 +115,9 @@ const MintNFT = (props) => {
     // fetch all products
     getAllProducts()
       .then((data) => setProducts(data))
-      .catch((e) => alert("Internal error"));
+      .catch((e) => message.error("Internal error"));
     setProducts([{ serial_no: 1 }]);
+    getAllUsers();
     setLoading(false);
   }, []);
 
@@ -111,7 +131,7 @@ const MintNFT = (props) => {
             <div className="form">
               <Spin size="large">
                 <Alert
-                  message="Please wait while we fetch product information from the  database."
+                  message="Please wait while we fetch  data from the  server."
                   description="This should not take too long. Please reload page after a minute if loading persists."
                   type="info"
                 />
@@ -124,16 +144,33 @@ const MintNFT = (props) => {
               title="Successfully Minted/Created the NFT and the same would be transferred to customer's wallet in 2 minutes!!"
               subTitle="This NFT is publicly visible and verifyable :)  "
               extra={[
-                <Button
-                  type="primary"
-                  key="console"
-                  onClick={handleMintNFTSucess}
-                >
-                  Mint NFT
-                </Button>,
-                <Button key="buy" onClick={handleSucessMint}>
-                  Mint/Create new NFT.
-                </Button>,
+                <div>
+                  <div>
+                    <Space>
+                      <Button
+                        type="primary"
+                        key="console"
+                        onClick={handleMintNFTSucess}
+                      >
+                        Mint NFT
+                      </Button>
+
+                      <Button key="buy" onClick={handleSucessMint}>
+                        Mint/Create new NFT.
+                      </Button>
+                    </Space>
+                  </div>
+                  <p className="mt-3">
+                    Transaction Hash:
+                    <a
+                      href={constants.POLYGON_URL_TX + hash}
+                      className=" underline"
+                      target="_blank"
+                    >
+                      {hash}
+                    </a>
+                  </p>
+                </div>,
               ]}
             />
           ) : (
@@ -168,73 +205,22 @@ const MintNFT = (props) => {
               </Form.Item>
 
               <Form.Item
-                label="Give user blockchain address"
+                label="Select customer"
                 name="blockChainAddress"
-                rules={[
-                  {
-                    required: true,
-                    message: "blockchain address is a required field!",
-                  },
-                  ({ getFieldValue }) => ({
-                    validator(_, value) {
-                      if (
-                        !value ||
-                        getFieldValue("blockChainAddress").trim().length === 42
-                      ) {
-                        return Promise.resolve();
-                      }
-                      return Promise.reject(
-                        new Error(
-                          "Please enter proper format blockchain address."
-                        )
-                      );
-                    },
-                  }),
-                ]}
+                rules={[{ required: true, message: "Please select user!" }]}
               >
-                <Input />
+                <Select placeholder="Click to see already registered users">
+                  {users.map((user) => {
+                    return (
+                      <Option value={user.blockChainAddress}>
+                        {user.name} - {user.phone} - {user.blockChainAddress}
+                      </Option>
+                    );
+                  })}
+                </Select>
               </Form.Item>
               <Form.Item
-                label="Give customer's name"
-                name="name"
-                rules={[
-                  {
-                    required: true,
-                    message: "Please enter proper customer's name!",
-                  },
-                ]}
-              >
-                <Input />
-              </Form.Item>
-              <Form.Item
-                label="Give  customer's phone number"
-                name="phone"
-                rules={[
-                  {
-                    required: true,
-                    message: "This field is required!",
-                  },
-                  ({ getFieldValue }) => ({
-                    validator(_, value) {
-                      if (
-                        !value ||
-                        getFieldValue("phone").trim().length == 10
-                      ) {
-                        return Promise.resolve();
-                      }
-                      return Promise.reject(
-                        new Error(
-                          "Please enter 10 digit phone number without any prefix or spaces."
-                        )
-                      );
-                    },
-                  }),
-                ]}
-              >
-                <Input />
-              </Form.Item>
-              <Form.Item
-                label="Give warranty date"
+                label="Give warranty perio"
                 name="warranty_range"
                 rules={[
                   {
@@ -250,6 +236,7 @@ const MintNFT = (props) => {
                   type="primary"
                   htmlType="submit"
                   className="login-form-button"
+                  loading={loading}
                   block
                 >
                   Mint and transfer NFT

@@ -5,16 +5,28 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  flex-basis: 100rem;
 }
-
+.center-form-box {
+  flex-basis: 80vw;
+}
 .form {
   margin-top: 5rem !important;
   width: 42rem;
   margin-top: 4rem !important;
   margin-left: 4rem !important;
 }
-
+.left-3 {
+  background: linear-gradient(
+      53deg,
+      rgba(2, 0, 36, 0) 0%,
+      rgba(13, 129, 222, 0) 35%,
+      rgba(110, 74, 208, 1) 100%
+    ),
+    url("../public/assets/hero3.jpeg");
+  background-position: center;
+  background-size: cover;
+  flex-grow: 1;
+}
 .left {
   background: linear-gradient(
       53deg,
@@ -44,4 +56,20 @@
 }
 .h-vw {
   height: 100vh;
+}
+.login {
+  height: 100vh;
+  width: 100vw;
+  background-image: linear-gradient(to right, #4facfe 0%, #00f2fe 100%);
+}
+.login_right {
+  display: flex !important;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+.login_right form {
+  background: white;
+  flex-basis: 50rem;
+  padding: 5rem;
 }
