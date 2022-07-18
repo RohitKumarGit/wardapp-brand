@@ -3,6 +3,7 @@ import { constants } from "../constants";
 
 const HorizontalCard = ({ user }) => {
   // create a horizontal card with image on left and text on right
+  console.log(user);
   return (
     <Row>
       <Col span={7}>
@@ -41,7 +42,7 @@ const HorizontalCard = ({ user }) => {
         </div>
         <div className="mt-3">
           <span className=" text-gray-700 font-bold"> No. of products</span> :
-          {user.products.values.length}
+          {user.products.length}
         </div>
         <div className="mt-3">
           <span className=" text-gray-700 font-bold"> BTC address </span> :

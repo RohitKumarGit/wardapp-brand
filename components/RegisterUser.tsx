@@ -40,6 +40,7 @@ const RegisterUser = (props) => {
     props.handleMenuChange(MenuItems.MINT_NFT);
   };
   const onFinish = async function (val: any) {
+    console.log(val);
     setLoading(true);
     const options = {
       method: constants.API_ENDPOINTS.REGISTER_USER.METHOD,
@@ -138,6 +139,24 @@ const RegisterUser = (props) => {
                     message: "Please enter proper customer's name!",
                   },
                 ]}
+              >
+                <Input />
+              </Form.Item>
+              <Form.Item
+                label="Give customer's email"
+                name="email"
+                rules={[
+                  {
+                    type: "email",
+                    message: "Please enter proper customer's email!",
+                  },
+                ]}
+              >
+                <Input />
+              </Form.Item>
+              <Form.Item
+                label="Give customer's physical address"
+                name="address"
               >
                 <Input />
               </Form.Item>

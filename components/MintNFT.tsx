@@ -41,6 +41,9 @@ const MintNFT = (props) => {
   const [hash, setHash] = useState<string>("");
   const handleSucessMint = function () {
     setSuceess(false);
+    getAllProducts()
+      .then((data) => setProducts(data))
+      .catch((e) => message.error("Internal error"));
   };
   const handleMintNFTSucess = function () {
     props.handleMenuChange(MenuItems.VIEW_PRODUCTS);
