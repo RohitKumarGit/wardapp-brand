@@ -2,6 +2,8 @@ import { Button, Col, Form, Image, Input, message, Row } from "antd";
 import { getAuth, signInWithEmailAndPassword, signOut } from "firebase/auth";
 import { setRequestMeta } from "next/dist/server/request-meta";
 import { useState } from "react";
+
+
 const auth = getAuth();
 export const LogOut = async function () {
   try {
@@ -32,7 +34,20 @@ const Login = function () {
     setLoading(false);
   };
   return (
-    <div className="login">
+
+    <div className="login login_bg area">
+      <ul className="circles">
+                    <li></li>
+                    <li></li>
+                    <li></li>
+                    <li></li>
+                    <li></li>
+                    <li></li>
+                    <li></li>
+                    <li></li>
+                    <li></li>
+                    <li></li>
+            </ul>
       <Row>
         <Col span={24} className="login_right">
           <Form
