@@ -1,6 +1,6 @@
 export const constants = {
   BRAND_ID: "123",
-  BASE_URL: "http://127.0.0.1:3001",
+  BASE_URL: "https://seal-app-d935r.ondigitalocean.app",
   META_DATA_SERVER:
     "https://woxpdvfthtmznhwvymeo.supabase.co/storage/v1/object/public/nfts/",
   POLYGON_URL_ADDRESS: "https://mumbai.polygonscan.com/address/",
