@@ -86,7 +86,10 @@ const columns: Column[] = [
           <Button type="primary">Pologon Scan</Button>
         </a>
 
-        <a href={constants.POLYGON_URL_TX + record.hash} target="_blank˝">
+        <a
+          href={constants.USER_END_BASE + "tokens/" + record.tokenId}
+          target="_blank˝"
+        >
           <Button>Ownership Chain</Button>
         </a>
       </Space>

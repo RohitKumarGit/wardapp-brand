@@ -6,6 +6,7 @@ import { Product } from "../utils";
 import HorizontalCard from "./HorizontalCard";
 import { Column } from "./MintedNFTs";
 import moment from "moment";
+import Link from "next/link";
 const UserCardHorizontal = ({ user }) => {
   const allMintedTokenQuery = useMoralisQuery(
     constants.TRANSFER_TABLE_NAME,
@@ -57,9 +58,11 @@ const UserCardHorizontal = ({ user }) => {
       dataIndex: "",
       key: "",
       render: (_, record: Product) => (
-        <Button ghost type="primary">
-          View Details
-        </Button>
+        <Link href={constants.USER_END_BASE + "/tokens/" + record.token_id}>
+          <Button ghost type="primary">
+            View Details
+          </Button>
+        </Link>
       ),
     },
   ];
