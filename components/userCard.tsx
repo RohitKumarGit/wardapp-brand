@@ -71,7 +71,7 @@ const Usercard = () => {
             placeholder="Start typing name of user"
           />
           {filteredUser.map((user) => (
-            <UserCardHorizontal user={user} />
+            <UserCardHorizontal user={user} key={user.phone} />
           ))}
         </Space>
       )}

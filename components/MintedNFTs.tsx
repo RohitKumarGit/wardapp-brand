@@ -174,6 +174,7 @@ export default function MintedNFTs() {
               }
               target="_blank"
               className=" underline"
+              rel="noopener noreferrer"
             >
               {process.env.CONTRACT_ADDRESS}
             </a>

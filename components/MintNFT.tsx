@@ -147,7 +147,7 @@ const MintNFT = (props) => {
               title="Successfully Minted/Created the NFT and the same would be transferred to customer's wallet in 2 minutes!!"
               subTitle="This NFT is publicly visible and verifyable :)  "
               extra={[
-                <div>
+                <div key={1}>
                   <div>
                     <Space>
                       <Button
@@ -169,6 +169,7 @@ const MintNFT = (props) => {
                       href={constants.POLYGON_URL_TX + hash}
                       className=" underline"
                       target="_blank"
+                      rel="noopener noreferrer"
                     >
                       {hash}
                     </a>
@@ -199,7 +200,7 @@ const MintNFT = (props) => {
                 <Select placeholder="Click to see available serial numbers">
                   {products.map((product) => {
                     return (
-                      <Option value={product.serial_no}>
+                      <Option value={product.serial_no} key={product.serial_no}>
                         {product.serial_no}
                       </Option>
                     );
@@ -215,7 +216,7 @@ const MintNFT = (props) => {
                 <Select placeholder="Click to see already registered users">
                   {users.map((user) => {
                     return (
-                      <Option value={user.blockChainAddress}>
+                      <Option value={user.blockChainAddress} key={user.phone}>
                         {user.name} - {user.phone} - {user.blockChainAddress}
                       </Option>
                     );

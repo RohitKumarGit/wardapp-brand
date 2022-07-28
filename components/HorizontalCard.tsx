@@ -49,6 +49,7 @@ const HorizontalCard = ({ user }) => {
           <a
             href={constants.POLYGON_URL_ADDRESS + user.blockChainAddress}
             target="_blank"
+            rel="noreferrer"
           >
             {user.blockChainAddress}
           </a>

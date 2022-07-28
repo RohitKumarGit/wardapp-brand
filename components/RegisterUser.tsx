@@ -73,7 +73,7 @@ const RegisterUser = (props) => {
               title="User has been created"
               subTitle="Now you can mint tokens or sell products to this user "
               extra={[
-                <div>
+                <div key={1}>
                   <div>
                     <Space>
                       <Button
