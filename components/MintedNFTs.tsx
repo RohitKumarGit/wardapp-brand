@@ -126,6 +126,9 @@ export default function MintedNFTs() {
       const metaData = await fetchMetaData(attributes.token);
       console.log(metaData, "data ");
       const user = await fetchUserData(metaData.sold_to);
+      if ((user as any).error) {
+        continue;
+      }
       console.log(user);
       if (metaData.brand_id == localStorage.getItem("brandId")) {
         ans.push({
