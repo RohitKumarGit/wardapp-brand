@@ -154,6 +154,7 @@ const ListProduct = (props) => {
               <Form
                 name="basic"
                 layout="vertical"
+                labelCol={{ span: 16 }}
                 wrapperCol={{ span: 16 }}
                 initialValues={{ remember: true }}
                 onFinish={onFinish}

@@ -181,7 +181,7 @@ const MintNFT = (props) => {
             <Form
               name="basic"
               layout="vertical"
-              labelCol={{ span: 8 }}
+              labelCol={{ span: 16 }}
               wrapperCol={{ span: 16 }}
               initialValues={{ remember: true }}
               onFinish={onFinish}
