@@ -19,5 +19,5 @@ We have given extra effort to write clean, readable, and reusable code. Please h
 ## To Run this application locally on the server
 1. Clone the repository
 3. run `yarn install` to install required packages
-4. run the application with `yarn serve`
+4. run the application with `yarn dev`
 
